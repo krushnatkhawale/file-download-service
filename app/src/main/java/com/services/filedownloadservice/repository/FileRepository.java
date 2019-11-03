@@ -4,9 +4,14 @@ import com.services.filedownloadservice.model.FileResource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Repository;
 
 import java.io.File;
+import java.net.MalformedURLException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
@@ -19,13 +24,26 @@ import static java.util.stream.Collectors.toList;
 @Repository
 public class FileRepository {
 
-    private FileSystemResource fileSystemResource;
     private final File file;
 
     public FileRepository(@Value("${storagePath}") String storagePath) {
         log.info("File storage path: {}", storagePath);
-        fileSystemResource = new FileSystemResource(storagePath);
+        FileSystemResource fileSystemResource = new FileSystemResource(storagePath);
         file = fileSystemResource.getFile();
+    }
+
+    public Resource getFile(String fileName) {
+        try {
+            Path filePath = Paths.get(file.toURI()).resolve(fileName).normalize();
+            Resource resource = new UrlResource(filePath.toUri());
+            if(resource.exists()) {
+                return resource;
+            } else {
+                return null;
+            }
+        } catch (MalformedURLException ex) {
+            return null;
+        }
     }
 
     public List<FileResource> getFiles() {
