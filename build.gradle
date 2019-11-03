@@ -1,0 +1,12 @@
+subprojects {
+
+    group = 'com.service'
+    version = '0.0.1-SNAPSHOT'
+
+    repositories {
+        mavenLocal()
+        mavenCentral()
+    }
+
+    task listAllDependencies(type: DependencyReportTask) {}
+}

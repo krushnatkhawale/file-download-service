@@ -1,0 +1,4 @@
+rootProject.name = 'file-download-service'
+
+include 'app'
+project(":app").name = rootProject.name
